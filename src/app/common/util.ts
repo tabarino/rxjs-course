@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 
 export function createHttpObservable(url: string) {
-    return Observable.create(observer => {
+    return new Observable(observer => {
         fetch(url)
             .then(response => {
                 return response.json();
