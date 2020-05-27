@@ -1,28 +1,26 @@
-
 <h2 mat-dialog-title>{{course.description}}</h2>
-
 
 <mat-dialog-content [formGroup]="form">
 
     <mat-form-field>
 
-        <input matInput
-                placeholder="Course Description"
-               formControlName="description">
+        <input matInput placeholder="Course Description" formControlName="description">
 
     </mat-form-field>
 
     <mat-form-field>
 
-        <mat-select placeholder="Select category"
-            formControlName="category">
+        <mat-select placeholder="Select category" formControlName="category">
 
             <mat-option value="BEGINNER">
-                Beginner</mat-option>
+                Beginner
+            </mat-option>
             <mat-option value="INTERMEDIATE">
-                Intermediate</mat-option>
+                Intermediate
+            </mat-option>
             <mat-option value="ADVANCED">
-                Advanced</mat-option>
+                Advanced
+            </mat-option>
 
         </mat-select>
 
@@ -30,13 +28,9 @@
 
     <mat-form-field>
 
-        <input matInput [matDatepicker]="myDatepicker" #searchInput
-            formControlName="releasedAt">
+        <input matInput [matDatepicker]="myDatepicker" #searchInput formControlName="releasedAt">
 
-        <mat-datepicker-toggle matSuffix
-                               [for]="myDatepicker">
-
-        </mat-datepicker-toggle>
+        <mat-datepicker-toggle matSuffix [for]="myDatepicker"></mat-datepicker-toggle>
 
         <mat-datepicker #myDatepicker></mat-datepicker>
 
@@ -44,20 +38,15 @@
 
     <mat-form-field>
 
-        <textarea matInput placeholder="Description"
-            formControlName="longDescription">
-
-        </textarea>
+        <textarea matInput placeholder="Description" formControlName="longDescription"></textarea>
 
     </mat-form-field>
-
 
 </mat-dialog-content>
 
 <mat-dialog-actions>
 
-    <button class="mat-raised-button"
-            (click)="close()">
+    <button class="mat-raised-button" (click)="close()">
         Close
     </button>
 
@@ -66,5 +55,3 @@
     </button>
 
 </mat-dialog-actions>
-
-
