@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { concat, fromEvent, interval, merge, noop, Observable, of, timer } from 'rxjs';
+import { concat, fromEvent, interval, merge, noop, Observable, of, Subject, timer } from 'rxjs';
 import { createHttpObservable } from '../common/util';
 import { map } from 'rxjs/operators';
 
@@ -13,9 +13,15 @@ export class AboutComponent implements OnInit {
     }
 
     ngOnInit() {
-        const http$ = createHttpObservable('/api/courses');
-        const sub = http$.subscribe(console.log);
+        const subject = new Subject();
+        const series$ = subject.asObservable();
 
-        setTimeout(() => sub.unsubscribe(), 0);
+        series$.subscribe(console.log);
+
+        subject.next(1);
+        subject.next(2);
+        subject.next(3);
+
+        subject.complete();
     }
 }
