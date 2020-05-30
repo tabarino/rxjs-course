@@ -34,7 +34,11 @@ export class CourseComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         this.courseId = this.route.snapshot.params['id'];
-        this.course$ = createHttpObservable(`/api/courses/${ this.courseId }`);
+        this.course$ = createHttpObservable(`/api/courses/${ this.courseId }`)
+            .pipe(
+                // Instead of using tap to log our messages we can create a custom rxjs operator
+                // tap(course => console.log('course: ', course))
+            );
     }
 
     ngAfterViewInit() {
@@ -42,6 +46,9 @@ export class CourseComponent implements OnInit, AfterViewInit {
             .pipe(
                 map(event => event.target.value),
                 startWith(''),
+                // Instead of using tap to log our messages we can create a custom rxjs operator
+                // tap(search => console.log('search: ', search)),
+                // debug(RxJsLoggingLevel.INFO, 'search: '),
                 debounceTime(400),
                 distinctUntilChanged(),
                 switchMap(search => this.loadLessons(search))
