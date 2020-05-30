@@ -1,8 +1,8 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Course } from '../model/course';
-import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
-import { fromEvent, Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, startWith, switchMap, tap } from 'rxjs/operators';
+import { forkJoin, fromEvent, Observable } from 'rxjs';
 import { Lesson } from '../model/lesson';
 import { createHttpObservable } from '../common/util';
 import { debug, RxJsLoggingLevel, setRxJsLoggingLevel } from '../common/debug';
@@ -24,29 +24,28 @@ export class CourseComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         this.courseId = this.route.snapshot.params['id'];
-        this.course$ = createHttpObservable(`/api/courses/${ this.courseId }`)
+
+        const course$ = createHttpObservable(`/api/courses/${ this.courseId }`);
+        const lessons$ = this.loadLessons();
+
+        forkJoin(course$, lessons$)
             .pipe(
-                // Instead of using tap to log our messages we can create a custom rxjs operator
-                // tap(course => console.log('course: ', course))
-                debug(RxJsLoggingLevel.INFO, 'course'),
-            );
+                tap(([course, lessons]) => {
+                    console.log('course: ', course);
+                    console.log('lessons: ', lessons);
+                })
+            )
+            .subscribe();
     }
 
     ngAfterViewInit() {
-        // You can change the Logging Level with this function when you are debugging
-        setRxJsLoggingLevel(RxJsLoggingLevel.DEBUG);
-
         this.lessons$ = fromEvent<any>(this.input.nativeElement, 'keyup')
             .pipe(
                 map(event => event.target.value),
                 startWith(''),
-                // Instead of using tap to log our messages we can create a custom rxjs operator
-                // tap(search => console.log('search: ', search)),
-                debug(RxJsLoggingLevel.TRACE, 'search'),
                 debounceTime(400),
                 distinctUntilChanged(),
                 switchMap(search => this.loadLessons(search)),
-                debug(RxJsLoggingLevel.DEBUG, 'lessons'),
             );
     }
 
