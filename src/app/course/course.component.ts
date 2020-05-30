@@ -1,21 +1,11 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Course } from '../model/course';
-import {
-    debounceTime,
-    distinctUntilChanged,
-    startWith,
-    tap,
-    delay,
-    map,
-    concatMap,
-    switchMap,
-    withLatestFrom,
-    concatAll, shareReplay
-} from 'rxjs/operators';
-import { merge, fromEvent, Observable, concat } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
+import { fromEvent, Observable } from 'rxjs';
 import { Lesson } from '../model/lesson';
 import { createHttpObservable } from '../common/util';
+import { debug, RxJsLoggingLevel, setRxJsLoggingLevel } from '../common/debug';
 
 @Component({
     selector: 'course',
@@ -38,20 +28,25 @@ export class CourseComponent implements OnInit, AfterViewInit {
             .pipe(
                 // Instead of using tap to log our messages we can create a custom rxjs operator
                 // tap(course => console.log('course: ', course))
+                debug(RxJsLoggingLevel.INFO, 'course'),
             );
     }
 
     ngAfterViewInit() {
+        // You can change the Logging Level with this function when you are debugging
+        setRxJsLoggingLevel(RxJsLoggingLevel.DEBUG);
+
         this.lessons$ = fromEvent<any>(this.input.nativeElement, 'keyup')
             .pipe(
                 map(event => event.target.value),
                 startWith(''),
                 // Instead of using tap to log our messages we can create a custom rxjs operator
                 // tap(search => console.log('search: ', search)),
-                // debug(RxJsLoggingLevel.INFO, 'search: '),
+                debug(RxJsLoggingLevel.TRACE, 'search'),
                 debounceTime(400),
                 distinctUntilChanged(),
-                switchMap(search => this.loadLessons(search))
+                switchMap(search => this.loadLessons(search)),
+                debug(RxJsLoggingLevel.DEBUG, 'lessons'),
             );
     }
 
