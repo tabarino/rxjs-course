@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Course } from '../model/course';
-import { debounceTime, distinctUntilChanged, first, map, startWith, switchMap, take, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, first, map, startWith, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { forkJoin, fromEvent, Observable } from 'rxjs';
 import { Lesson } from '../model/lesson';
 import { createHttpObservable } from '../common/util';
@@ -28,14 +28,16 @@ export class CourseComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         this.courseId = this.route.snapshot.params['id'];
-        this.course$ = this.store.selectCourseById(this.courseId)
-            .pipe(
-                // first()
-                take(1)
-            );
+        this.course$ = this.store.selectCourseById(this.courseId);
 
-        forkJoin(this.course$, this.loadLessons())
-            .subscribe(console.log);
+        this.loadLessons()
+            .pipe(
+                withLatestFrom(this.course$)
+            )
+            .subscribe(([lessons, course]) => {
+                console.log(course);
+                console.log(lessons);
+            });
     }
 
     ngAfterViewInit() {
