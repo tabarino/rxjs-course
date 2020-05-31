@@ -3,6 +3,7 @@ import { Course } from '../model/course';
 import { interval, noop, Observable, of, throwError, timer } from 'rxjs';
 import { catchError, delayWhen, finalize, map, retryWhen, shareReplay, tap } from 'rxjs/operators';
 import { createHttpObservable } from '../common/util';
+import { Store } from '../common/store.service';
 
 @Component({
     selector: 'home',
@@ -13,7 +14,7 @@ export class HomeComponent implements OnInit {
     beginnersCourses$: Observable<Course[]>;
     advancedCourses$: Observable<Course[]>;
 
-    constructor() {
+    constructor(private store: Store) {
     }
 
     ngOnInit() {
