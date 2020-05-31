@@ -24,6 +24,13 @@ export class Store {
             );
     }
 
+    selectCourseById(courseId: number) {
+        return this.courses$
+            .pipe(
+                map(courses => courses.find(course => course.id == courseId))
+            );
+    }
+
     selectBeginnerCourses() {
         return this.filterByCategory('BEGINNER');
     }

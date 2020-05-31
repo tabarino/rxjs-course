@@ -6,6 +6,7 @@ import { forkJoin, fromEvent, Observable } from 'rxjs';
 import { Lesson } from '../model/lesson';
 import { createHttpObservable } from '../common/util';
 import { debug, RxJsLoggingLevel, setRxJsLoggingLevel } from '../common/debug';
+import { Store } from '../common/store.service';
 
 @Component({
     selector: 'course',
@@ -13,29 +14,21 @@ import { debug, RxJsLoggingLevel, setRxJsLoggingLevel } from '../common/debug';
     styleUrls: ['./course.component.css']
 })
 export class CourseComponent implements OnInit, AfterViewInit {
-    courseId: string;
+    courseId: number;
     course$: Observable<Course>;
     lessons$: Observable<Lesson[]>;
 
     @ViewChild('searchInput', { static: true }) input: ElementRef;
 
-    constructor(private route: ActivatedRoute) {
+    constructor(
+        private route: ActivatedRoute,
+        private store: Store
+    ) {
     }
 
     ngOnInit() {
         this.courseId = this.route.snapshot.params['id'];
-
-        const course$ = createHttpObservable(`/api/courses/${ this.courseId }`);
-        const lessons$ = this.loadLessons();
-
-        forkJoin(course$, lessons$)
-            .pipe(
-                tap(([course, lessons]) => {
-                    console.log('course: ', course);
-                    console.log('lessons: ', lessons);
-                })
-            )
-            .subscribe();
+        this.course$ = this.store.selectCourseById(this.courseId);
     }
 
     ngAfterViewInit() {
